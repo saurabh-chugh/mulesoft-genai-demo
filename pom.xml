@@ -11,7 +11,7 @@
     <name>customer-api</name>
 
     <properties>
-        <app.runtime>4.6.0</app.runtime>
+        <app.runtime>4.9.0</app.runtime>
         <mule.maven.plugin.version>4.4.0</mule.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -24,20 +24,22 @@
                 <version>${mule.maven.plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <cloudHubDeployment>
+                    <cloudhub2Deployment>
                         <uri>https://anypoint.mulesoft.com</uri>
                         <muleVersion>${app.runtime}</muleVersion>
+                        <javaVersion>17</javaVersion>
                         <connectedAppClientId>${anypoint.clientId}</connectedAppClientId>
                         <connectedAppClientSecret>${anypoint.clientSecret}</connectedAppClientSecret>
                         <connectedAppGrantType>client_credentials</connectedAppGrantType>
                         <applicationName>customer-api-demo-${env.GITHUB_RUN_NUMBER}</applicationName>
                         <environment>Sandbox</environment>
                         <businessGroup>Test</businessGroup>
-                        <region>us-east-2</region>
-                        <workerType>MICRO</workerType>
-                        <workers>1</workers>
+                        <target>Cloudhub-US-East-2</target>
+                        <provider>MC</provider>
+                        <replicas>1</replicas>
+                        <vCores>0.1</vCores>
                         <deploymentTimeout>600000</deploymentTimeout>
-                    </cloudHubDeployment>
+                    </cloudhub2Deployment>
                 </configuration>
             </plugin>
         </plugins>
