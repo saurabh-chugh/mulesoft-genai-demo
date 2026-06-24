@@ -21,17 +21,17 @@ jobs:
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.m2
+          path: ~/.m2/repository
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
 
       - name: Verify secrets are present
         run: |
           if [ -z "$CLIENT_ID" ]; then
-            echo "ERROR: ANYPOINT_CLIENT_ID secret is empty or missing"
+            echo "ERROR: ANYPOINT_CLIENT_ID secret is missing"
             exit 1
           fi
           if [ -z "$CLIENT_SECRET" ]; then
-            echo "ERROR: ANYPOINT_CLIENT_SECRET secret is empty or missing"
+            echo "ERROR: ANYPOINT_CLIENT_SECRET secret is missing"
             exit 1
           fi
           echo "Secrets are configured"
@@ -39,11 +39,39 @@ jobs:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
 
-      - name: Build and Deploy to CloudHub
+      - name: Configure Maven settings.xml with Exchange credentials
         env:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
-          mvn clean deploy -DmuleDeploy -X \
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+            <servers>
+              <server>
+                <id>exchange-repo</id>
+                <username>~~~Client~~~</username>
+                <password>${CLIENT_ID}~?~${CLIENT_SECRET}</password>
+              </server>
+              <server>
+                <id>anypoint-exchange-v3</id>
+                <username>~~~Client~~~</username>
+                <password>${CLIENT_ID}~?~${CLIENT_SECRET}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Publish to Exchange and Deploy to CloudHub
+        env:
+          CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
+        run: |
+          # Step 1: Build and publish artifact to Exchange
+          mvn clean deploy -DskipMuleDeploy=true
+          
+          # Step 2: Deploy from Exchange to CloudHub 2.0
+          mvn deploy -DmuleDeploy \
             -Danypoint.clientId="$CLIENT_ID" \
             -Danypoint.clientSecret="$CLIENT_SECRET"
