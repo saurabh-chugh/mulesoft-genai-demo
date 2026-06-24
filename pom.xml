@@ -96,4 +96,13 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <distributionManagement>
+        <repository>
+            <id>exchange-repo</id>
+            <name>Corporate Repository</name>
+            <url>https://maven.anypoint.mulesoft.com/api/v3/organizations/4f60a02d-f19f-4d3d-ac81-42dd6d0bd005/maven</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
+
 </project>
