@@ -1,4 +1,6 @@
+http:
+  port: "8081"
 api:
   basePath: "/api/v1"
 external:
-  timeout: 5000
+  timeout: "5000"
