@@ -62,6 +62,10 @@
                         <replicas>1</replicas>
                         <vCores>0.1</vCores>
                         <deploymentTimeout>1200000</deploymentTimeout>
+                        <properties>
+                               <betterstack.token>${env.BETTERSTACK_TOKEN}</betterstack.token>
+                               <betterstack.url>${env.BETTERSTACK_INGEST_URL}</betterstack.url>
+                        </properties>
                     </cloudhub2Deployment>
                 </configuration>
             </plugin>
