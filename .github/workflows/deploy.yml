@@ -1,0 +1,46 @@
+name: Deploy to CloudHub
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+
+      - name: Configure Maven settings
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>anypoint-exchange-v3</id>
+                <username>${{ secrets.ANYPOINT_USERNAME }}</username>
+                <password>${{ secrets.ANYPOINT_PASSWORD }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Build and Deploy to CloudHub
+        run: |
+          mvn clean deploy -DmuleDeploy \
+            -Danypoint.username=${{ secrets.ANYPOINT_USERNAME }} \
+            -Danypoint.password=${{ secrets.ANYPOINT_PASSWORD }}
