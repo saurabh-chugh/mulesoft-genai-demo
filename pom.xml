@@ -6,7 +6,7 @@
 
     <groupId>4f60a02d-f19f-4d3d-ac81-42dd6d0bd005</groupId>
     <artifactId>customer-api</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.${env.GITHUB_RUN_NUMBER}</version>
     <packaging>mule-application</packaging>
     <name>customer-api</name>
 
@@ -38,7 +38,7 @@
                         <provider>MC</provider>
                         <replicas>1</replicas>
                         <vCores>0.1</vCores>
-                        <deploymentTimeout>600000</deploymentTimeout>
+                        <deploymentTimeout>1200000</deploymentTimeout>
                     </cloudhub2Deployment>
                 </configuration>
             </plugin>
