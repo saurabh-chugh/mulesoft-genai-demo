@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+    <!-- ENDPOINT 1: Health check (works fine) -->
+    <flow name="health-check-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/health"/>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "UP",
+  timestamp: now(),
+  service: "customer-api"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+
+    <!-- ENDPOINT 2: Transform customer (BUG: DataWeave date format wrong) -->
+    <flow name="transform-customer-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/customer/transform"/>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  customerId: payload.id,
+  fullName: payload.firstName ++ " " ++ payload.lastName,
+  dateOfBirth: payload.dob as Date {format: "dd/MM/yyyy"},
+  age: (now() - (payload.dob as Date {format: "dd/MM/yyyy"})).years,
+  email: upper(payload.email)
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+
+    <!-- ENDPOINT 3: Get users from external API (BUG: no error handling, short timeout) -->
+    <flow name="get-users-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/users"/>
+        <http:request method="GET" config-ref="External_API_Config" path="/users" responseTimeout="2000"/>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map (user) -> {
+  id: user.id,
+  name: user.name,
+  email: user.email,
+  city: user.address.city
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+
+    <!-- ENDPOINT 4: Enrich users (BUG: sequential foreach is slow) -->
+    <flow name="enrich-users-flow">
+        <http:listener config-ref="HTTP_Listener_config" path="/users/enrich"/>
+        <http:request method="GET" config-ref="External_API_Config" path="/users"/>
+        <set-variable variableName="enrichedUsers" value="#[[]]"/>
+        <foreach collection="#[payload]">
+            <http:request method="GET" config-ref="External_API_Config" path="#['/posts?userId=' ++ (payload.id as String)]"/>
+            <set-variable variableName="enrichedUsers" value="#[vars.enrichedUsers ++ [{userId: vars.counter, postCount: sizeOf(payload)}]]"/>
+        </foreach>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.enrichedUsers]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+
+</mule>

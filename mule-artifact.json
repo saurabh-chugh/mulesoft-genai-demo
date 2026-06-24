@@ -1,0 +1,13 @@
+{
+  "minMuleVersion": "4.6.0",
+  "name": "customer-api",
+  "configs": [
+    "customer-api.xml",
+    "global-config.xml"
+  ],
+  "redeploymentEnabled": true,
+  "secureProperties": [],
+  "javaSpecificationVersions": [
+    "17"
+  ]
+}

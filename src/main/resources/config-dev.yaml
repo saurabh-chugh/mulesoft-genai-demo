@@ -1,0 +1,4 @@
+api:
+  basePath: "/api/v1"
+external:
+  timeout: 5000
