@@ -53,7 +53,7 @@
                         <connectedAppClientId>${anypoint.clientId}</connectedAppClientId>
                         <connectedAppClientSecret>${anypoint.clientSecret}</connectedAppClientSecret>
                         <connectedAppGrantType>client_credentials</connectedAppGrantType>
-                        <applicationName>customer-api-demo-${env.GITHUB_RUN_NUMBER}</applicationName>
+                        <applicationName>customer-api-demo</applicationName>
                         <environment>Sandbox</environment>
                         <businessGroup>Test</businessGroup>
                         <target>Cloudhub-US-East-2</target>
