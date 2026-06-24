@@ -29,6 +29,8 @@ jobs:
         env:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
+          BETTERSTACK_TOKEN: ${{ secrets.BETTERSTACK_TOKEN }}
+          BETTERSTACK_INGEST_URL: ${{ secrets.BETTERSTACK_INGEST_URL }}
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<EOF
