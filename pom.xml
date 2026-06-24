@@ -54,6 +54,7 @@
                         <connectedAppClientSecret>${anypoint.clientSecret}</connectedAppClientSecret>
                         <connectedAppGrantType>client_credentials</connectedAppGrantType>
                         <applicationName>customer-api-demo</applicationName>
+                        <skipDeploymentVerification>false</skipDeploymentVerification>
                         <environment>Sandbox</environment>
                         <businessGroup>Test</businessGroup>
                         <target>Cloudhub-US-East-2</target>
