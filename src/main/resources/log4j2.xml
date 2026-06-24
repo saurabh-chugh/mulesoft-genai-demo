@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration status="WARN" name="customer-api" packages="">
+
+    <Appenders>
+        
+        <!-- Console: keeps logs visible in CloudHub UI -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5p %d [%t] %c: %m%n"/>
+        </Console>
+        
+        <!-- BetterStack HTTP appender -->
+        <Http name="BetterStack" url="${sys:betterstack.url}">
+            <Property name="Authorization" value="Bearer ${sys:betterstack.token}"/>
+            <Property name="Content-Type" value="application/json"/>
+            <JsonLayout properties="true" 
+                        complete="false" 
+                        compact="true" 
+                        eventEol="true">
+                <KeyValuePair key="service" value="customer-api"/>
+                <KeyValuePair key="environment" value="sandbox"/>
+            </JsonLayout>
+        </Http>
+        
+        <!-- Required by CloudHub — don't remove -->
+        <RollingFile name="file"
+                     fileName="${sys:mule.home}/logs/${sys:app.name}.log"
+                     filePattern="${sys:mule.home}/logs/${sys:app.name}-%i.log">
+            <PatternLayout pattern="%-5p %d [%t] %c: %m%n"/>
+            <SizeBasedTriggeringPolicy size="10 MB"/>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        
+    </Appenders>
+
+    <Loggers>
+        
+        <!-- Mule <logger> components in flows -->
+        <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" 
+                     level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="BetterStack"/>
+            <AppenderRef ref="file"/>
+        </AsyncLogger>
+        
+        <!-- Mule runtime warnings & errors -->
+        <AsyncLogger name="org.mule.runtime" level="WARN">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="BetterStack"/>
+            <AppenderRef ref="file"/>
+        </AsyncLogger>
+        
+        <!-- DataWeave errors (critical for our demo!) -->
+        <AsyncLogger name="com.mulesoft.weave" level="WARN">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="BetterStack"/>
+            <AppenderRef ref="file"/>
+        </AsyncLogger>
+        
+        <!-- Catch-all -->
+        <AsyncRoot level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="BetterStack"/>
+            <AppenderRef ref="file"/>
+        </AsyncRoot>
+        
+    </Loggers>
+
+</Configuration>
