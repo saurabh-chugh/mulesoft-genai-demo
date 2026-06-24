@@ -24,21 +24,20 @@
                 <version>${mule.maven.plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <cloudhub2Deployment>
+                    <cloudHubDeployment>
                         <uri>https://anypoint.mulesoft.com</uri>
                         <muleVersion>${app.runtime}</muleVersion>
                         <connectedAppClientId>${anypoint.clientId}</connectedAppClientId>
                         <connectedAppClientSecret>${anypoint.clientSecret}</connectedAppClientSecret>
                         <connectedAppGrantType>client_credentials</connectedAppGrantType>
-                        <applicationName>customer-api-demo</applicationName>
+                        <applicationName>customer-api-demo-${env.GITHUB_RUN_NUMBER}</applicationName>
                         <environment>Sandbox</environment>
                         <businessGroup>Test</businessGroup>
-                        <target>Cloudhub-US-East-2</target>
-                        <provider>MC</provider>
-                        <replicas>1</replicas>
-                        <vCores>0.1</vCores>
+                        <region>us-east-2</region>
+                        <workerType>MICRO</workerType>
+                        <workers>1</workers>
                         <deploymentTimeout>600000</deploymentTimeout>
-                    </cloudhub2Deployment>
+                    </cloudHubDeployment>
                 </configuration>
             </plugin>
         </plugins>
