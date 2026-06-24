@@ -6,11 +6,12 @@
 
     <groupId>4f60a02d-f19f-4d3d-ac81-42dd6d0bd005</groupId>
     <artifactId>customer-api</artifactId>
-    <version>1.0.${env.GITHUB_RUN_NUMBER}</version>
+    <version>${revision}</version>
     <packaging>mule-application</packaging>
     <name>customer-api</name>
 
     <properties>
+        <revision>1.0.0-LOCAL</revision>
         <app.runtime>4.9.0</app.runtime>
         <mule.maven.plugin.version>4.4.0</mule.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,6 +19,31 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.mule.tools.maven</groupId>
                 <artifactId>mule-maven-plugin</artifactId>
