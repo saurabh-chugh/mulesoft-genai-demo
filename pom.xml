@@ -31,16 +31,12 @@
                     <execution>
                         <id>flatten</id>
                         <phase>process-resources</phase>
-                        <goals>
-                            <goal>flatten</goal>
-                        </goals>
+                        <goals><goal>flatten</goal></goals>
                     </execution>
                     <execution>
                         <id>flatten.clean</id>
                         <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
+                        <goals><goal>clean</goal></goals>
                     </execution>
                 </executions>
             </plugin>
@@ -94,12 +90,6 @@
             <layout>default</layout>
         </repository>
         <repository>
-            <id>mulesoft-releases</id>
-            <name>MuleSoft Releases Repository</name>
-            <url>https://repository.mulesoft.org/releases/</url>
-            <layout>default</layout>
-        </repository>
-        <repository>
             <id>mulesoft-public</id>
             <name>MuleSoft Public Repository</name>
             <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
@@ -112,12 +102,6 @@
             <id>mulesoft-public</id>
             <name>MuleSoft Public Repository</name>
             <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
-            <layout>default</layout>
-        </pluginRepository>
-        <pluginRepository>
-            <id>mulesoft-releases-plugin</id>
-            <name>MuleSoft Releases Repository</name>
-            <url>https://repository.mulesoft.org/releases/</url>
             <layout>default</layout>
         </pluginRepository>
     </pluginRepositories>
