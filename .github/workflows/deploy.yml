@@ -23,23 +23,9 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-
 
-      - name: Verify secrets are present
-        run: |
-          if [ -z "$CLIENT_ID" ]; then
-            echo "ERROR: ANYPOINT_CLIENT_ID secret is missing"
-            exit 1
-          fi
-          if [ -z "$CLIENT_SECRET" ]; then
-            echo "ERROR: ANYPOINT_CLIENT_SECRET secret is missing"
-            exit 1
-          fi
-          echo "Secrets are configured"
-        env:
-          CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
-
-      - name: Configure Maven settings.xml with Exchange credentials
+      - name: Configure Maven settings
         env:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
@@ -63,18 +49,14 @@ jobs:
           </settings>
           EOF
 
-      - name: Publish to Exchange and Deploy to CloudHub
+      - name: Publish to Exchange
+        run: mvn clean deploy -DskipMuleDeploy=true -Drevision=1.0.${{ github.run_number }} -B
+
+      - name: Deploy to CloudHub 2.0
         env:
           CLIENT_ID: ${{ secrets.ANYPOINT_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.ANYPOINT_CLIENT_SECRET }}
         run: |
-          VERSION="1.0.${{ github.run_number }}"
-          echo "Building version: $VERSION"
-          
-          # Step 1: Build and publish artifact to Exchange
-          mvn clean deploy -DskipMuleDeploy=true -Drevision=$VERSION
-          
-          # Step 2: Deploy from Exchange to CloudHub 2.0
-          mvn deploy -DmuleDeploy -Drevision=$VERSION \
+          mvn deploy -DmuleDeploy -Drevision=1.0.${{ github.run_number }} -B \
             -Danypoint.clientId="$CLIENT_ID" \
             -Danypoint.clientSecret="$CLIENT_SECRET"
