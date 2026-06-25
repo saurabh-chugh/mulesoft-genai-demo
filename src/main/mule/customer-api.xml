@@ -26,23 +26,23 @@ output application/json
     </flow>
 
     <!-- ENDPOINT 2: Transform customer (BUG: DataWeave date format wrong) -->
-    <flow name="transform-customer-flow">
-        <http:listener config-ref="HTTP_Listener_config" path="/customer/transform"/>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+      <flow name="transform-customer-flow">
+    <http:listener config-ref="HTTP_Listener_config" path="/customer/transform"/>
+    <ee:transform>
+        <ee:message>
+            <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{
-  customerId: payload.id,
-  fullName: payload.firstName ++ " " ++ payload.lastName,
-  dateOfBirth: payload.dob as Date {format: "dd/MM/yyyy"},
-  age: (now() - (payload.dob as Date {format: "dd/MM/yyyy"})).years,
-  email: upper(payload.email)
+payload map (item) -> {
+  customerId: item.id,
+  fullName: item.firstName ++ " " ++ item.lastName,
+  dateOfBirth: item.dob as Date {format: "dd/MM/yyyy"},
+  age: (now() - (item.dob as Date {format: "dd/MM/yyyy"})).years,
+  email: upper(item.email)
 }]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
+        </ee:message>
+    </ee:transform>
+</flow>
 
     <!-- ENDPOINT 3: Get users from external API (BUG: no error handling, short timeout) -->
     <flow name="get-users-flow">
