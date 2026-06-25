@@ -35,7 +35,7 @@ output application/json
 ---
 payload map (item) -> {
   customerId: item.id,
-  fullName: item.firstName ++ " " ++ item.lastName,
+  fullName: item.firstNam ++ " " ++ item.lastName,
   dateOfBirth: item.dob as Date {format: "dd/MM/yyyy"},
   age: (now() - (item.dob as Date {format: "dd/MM/yyyy"})).years,
   email: upper(item.email)
